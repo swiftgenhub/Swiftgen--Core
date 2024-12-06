@@ -25,8 +25,10 @@ SECRET_KEY = '2^adjpbk_eq&as+*5cys3d9htah)ajjx@@up444f^+7g-!#p47'
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    'swiftgen-core.onrender.com',  # Updated Render hostname
-    '127.0.0.1',
+    'swiftgen-core.onrender.com',  # Render hostname
+    '127.0.0.1',  # Localhost
+    'swifttalentforge.com',  # Custom domain
+    'www.swifttalentforge.com',  # Custom domain with www
 ]
 
 # Application definition
