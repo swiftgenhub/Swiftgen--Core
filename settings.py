@@ -147,7 +147,7 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True  # Use TLS for Gmail SMTP
 EMAIL_USE_SSL = False
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'your-email@gmail.com')  # Your email address
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'upworkstud198@gmail.com')  # Your email address
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', None)  # Use environment variable for security
 
 if not EMAIL_HOST_PASSWORD:
