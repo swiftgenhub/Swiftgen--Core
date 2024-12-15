@@ -1,0 +1,19 @@
+# Dependabot configuration file
+# See the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+
+version: 2
+updates:
+  # Configure updates for npm dependencies (example)
+  - package-ecosystem: "npm" # Replace with your ecosystem (e.g., bundler, pip, etc.)
+    directory: "/" # Root directory of your package manifests
+    schedule:
+      interval: "weekly" # Update dependencies weekly
+    target-branch: "main" # Configure updates to the main branch
+
+  # Configure updates for Swift dependencies (if applicable)
+  - package-ecosystem: "swift" # Swift package manager
+    directory: "/" # Root directory of your Swift Package manifests
+    schedule:
+      interval: "weekly" # Check for updates weekly
+    target-branch: "main" # Apply changes to the main branch
