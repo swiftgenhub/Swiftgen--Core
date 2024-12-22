@@ -169,8 +169,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'upworkstud198@gmail.com'  # Replace with your Gmail account
-EMAIL_HOST_PASSWORD = 'yktr gjti qvhj nvci'  # Replace with your App Password
-
-# Default sender email
-DEFAULT_FROM_EMAIL = 'info@swifttalentforge.com'  # The alias you want to use
+EMAIL_HOST_USER = 'upworkstud198@gmail.com'  # Replace with your Gmail address
+EMAIL_HOST_PASSWORD = 'yktr gjti qvhj nvci'  # Replace with App Password or Gmail password if 2FA is disabled
+DEFAULT_FROM_EMAIL = 'Swift Talent Forge <upworkstud198@gmail.com>'
