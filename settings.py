@@ -171,4 +171,4 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'upworkstud198@gmail.com'  # Replace with your Gmail address
 EMAIL_HOST_PASSWORD = 'yktr gjti qvhj nvci'  # Replace with App Password or Gmail password if 2FA is disabled
-DEFAULT_FROM_EMAIL = 'Swift Talent Forge <upworkstud198@gmail.com>'
+DEFAULT_FROM_EMAIL = 'Swift Talent Forge <info@swifttalentforge.com>'
