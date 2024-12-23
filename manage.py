@@ -6,7 +6,7 @@ def main():
     """Run administrative tasks."""
     try:
         # Determine the environment and set the corresponding settings module
-        env = os.getenv('DJANGO_ENV', 'production').lower()
+        env = os.getenv('DJANGO_ENV', 'production').lower()  # Use os.getenv correctly
         
         if env == 'production':
             settings_module = 'Work.settings.production'
@@ -15,7 +15,7 @@ def main():
         else:
             settings_module = 'Work.settings.development'
         
-        # Ensure the settings module is correctly set
+        # Set the settings module environment variable
         os.environ.setdefault('DJANGO_SETTINGS_MODULE', settings_module)
         
         # Execute Django management commands
