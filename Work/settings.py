@@ -164,11 +164,16 @@ AUTHENTICATION_BACKENDS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Email configuration
+# Email backend configuration (use Gmail SMTP with environment variables)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587  # Use 465 for SSL/TLS
+EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_HOST_USER = 'upworkstud198@gmail.com'  # Replace with your email
-EMAIL_HOST_PASSWORD = 'meufzuxveyotnzpl'  # Replace with your email password or use environment variables
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')  # Use environment variable
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')  # Use environment variable
+DEFAULT_FROM_EMAIL = 'Swift Talent Forge <noreply@swifttalentforge.com>'
+
+# CSRF and Session security (enable secure cookies in production)
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
