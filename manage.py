@@ -3,8 +3,9 @@ import os
 import sys
 
 def main():
+    # Set the default settings module for the Django application
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'myproject.settings')
-    
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError:
