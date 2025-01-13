@@ -169,6 +169,8 @@ EMAIL_HOST_PASSWORD = env('yktr gjti qvhj nvci')  # Use environment variable
 DEFAULT_FROM_EMAIL = 'Swift Talent Forge <info@swifttalentforge.com>'
 
 # CSRF and Session security (enable secure cookies in production)
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
+    'https://swifttalentforge.com',
+    'https://swiftgen-core.onrender.com'  # Added Render domain
+]
