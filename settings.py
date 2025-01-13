@@ -170,7 +170,7 @@ DEFAULT_FROM_EMAIL = 'Swift Talent Forge <info@swifttalentforge.com>'
 
 # CSRF and Session security (enable secure cookies in production)
 CSRF_TRUSTED_ORIGINS = [
-    'https://*.vercel.app',
     'https://swifttalentforge.com',
+    'https://www.swifttalentforge.com',  # Added www version
     'https://swiftgen-core.onrender.com'  # Added Render domain
 ]
