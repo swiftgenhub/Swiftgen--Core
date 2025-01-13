@@ -173,7 +173,9 @@ EMAIL_HOST_USER = env('upworkstud198@gmail.com')  # Email address retrieved from
 EMAIL_HOST_PASSWORD = env('yktr gjti qvhj nvci')  # Password fetched from environment variable
 DEFAULT_FROM_EMAIL = 'Swift Talent Forge <info@swifttalentforge.com>'  # Default sender email for outgoing messages
 
-# CSRF and Session security (enable secure cookies in production)
-CSRF_COOKIE_SECURE = True
-SESSION_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
+# Additional Settings for Deployment
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
+    'https://swifttalentforge.com',
+    'https://swiftgen-core.onrender.com'  # Added Render domain
+]
