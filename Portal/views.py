@@ -129,7 +129,7 @@ def send_simple_message(reciever,subject,text):
     print(">>",reciever)
     print(">>",subject)
     print(">>",text)
-    fromaddr = "vurudi100@gmail.com"
+    fromaddr = "upworkstud198@gmail.com"
     toaddr = reciever
     msg = MIMEMultipart() 
 
@@ -184,62 +184,62 @@ def send_signup_email(user_email, first_name, request):
 
 
 def signup_user(request):
-    context = dict()
-    skill_list = Skill.objects.all()
-    language_list = CommunicationLanguage.objects.all()
-    context['skill_list'] = skill_list
-    context['language_list'] = language_list
+    context = {
+        'skill_list': Skill.objects.all(),
+        'language_list': CommunicationLanguage.objects.all()
+    }
 
     if request.method == 'POST':
+        # Retrieve form data
         username = request.POST['name']
         first_name = request.POST['fname']
         last_name = request.POST['lname']
         email = request.POST['email']
-        password1= request.POST['passwd1']
-        if email.endswith('@gmail.com'):
-            password1 = password1
-        else:
-            password1 = request.POST['passwd1']
+        password1 = request.POST['passwd1']
         phone_number = request.POST['phno']
         bio = request.POST['bio']
         image = request.FILES['image']
-        batchYear = request.POST['batch']
+        batch_year = request.POST['batch']
         gender = request.POST['gender']
         skills = request.POST.getlist('skills[]')
         languages = request.POST.getlist('languages[]')
 
-        # Create the User object
+        # Check if username already exists
+        if User.objects.filter(username=username).exists():
+            return HttpResponse("Username already taken", status=400)
+
+        # Create User object
         user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, email=email, password=password1)
 
-        # Create the CustomUser object
-        cuser = CustomUser(user=user, phone_number=phone_number, image=image, bio=bio, batchYear=batchYear, gender=gender)
+        # Create CustomUser object
+        custom_user = CustomUser(user=user, phone_number=phone_number, image=image, bio=bio, batchYear=batch_year, gender=gender)
 
-        # Save both objects
+        # Save both User and CustomUser objects
         user.save()
-        cuser.save()
+        custom_user.save()
 
         # Save user skills
-        for uskill in skills:
-            skill = Skill.objects.get(skill_name=uskill)
-            cuskill = UsersSkill(skill=skill, user=cuser, level_of_proficiency=int(request.POST[skill.skill_name]))
-            cuskill.save()
+        for skill_name in skills:
+            skill = Skill.objects.get(skill_name=skill_name)
+            proficiency = int(request.POST[skill_name])
+            UsersSkill.objects.create(skill=skill, user=custom_user, level_of_proficiency=proficiency)
 
         # Save user languages
-        for ulanguage in languages:
-            language = CommunicationLanguage.objects.get(language_name=ulanguage)
-            culanguage = UsersCommunicationLanguage(language=language, user=cuser, level_of_fluency=int(request.POST[language.language_name]))
-            culanguage.save()
+        for language_name in languages:
+            language = CommunicationLanguage.objects.get(language_name=language_name)
+            fluency = int(request.POST[language_name])
+            UsersCommunicationLanguage.objects.create(language=language, user=custom_user, level_of_fluency=fluency)
 
         # Log the user in
         login(request, user)
 
-        # Send a success email to the user
+        # Send signup success email
         send_signup_email(email, first_name, request)
 
         # Redirect to the home page
         return HttpResponseRedirect(reverse("Portal:home"))
 
-    # If not POST request, render the signup page with context
+    # Render the signup page if the request method is GET
     return render(request, 'signup.html', context)
 
 
