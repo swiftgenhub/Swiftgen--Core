@@ -171,6 +171,10 @@ DEFAULT_FROM_EMAIL = 'Swift Talent Forge <info@swifttalentforge.com>'
 # CSRF and Session security (enable secure cookies in production)
 CSRF_TRUSTED_ORIGINS = [
     'https://swifttalentforge.com',
-    'https://www.swifttalentforge.com',  # Added www version
+    'https://www.swifttalentforge.com',
     'https://swiftgen-core.onrender.com'  # Added Render domain
 ]
+
+# Secure session and CSRF cookies over HTTPS
+SESSION_COOKIE_SECURE = True  # Ensures session cookies are only sent over HTTPS
+CSRF_COOKIE_SECURE = True     # Ensures CSRF cookies are only sent over HTTPS
