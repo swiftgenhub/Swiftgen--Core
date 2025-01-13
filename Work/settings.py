@@ -188,8 +188,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env('upworkstud198@gmail.com')  # Email address retrieved from environment variable
-EMAIL_HOST_PASSWORD = env('yktr gjti qvhj nvci')  # Password fetched from environment variable
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', 'default_email@example.com')  # Replace 'default_email@example.com' with a fallback email if needed
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', 'default_password')  # Replace 'default_password' with a fallback if needed
 DEFAULT_FROM_EMAIL = 'Swift Talent Forge <info@swifttalentforge.com>'  # Default sender email for outgoing messages
 
 # Additional Settings for Deployment
