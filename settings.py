@@ -1,6 +1,6 @@
 import os
-import dj_database_url
 import environ
+import dj_database_url
 
 # Initialize environment variables using django-environ
 env = environ.Env(
@@ -24,7 +24,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('False')
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = [
     'swiftgen-core.onrender.com',  # Render hostname
@@ -52,7 +52,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [env('rediss://red-cu2r11lumphs73avnm60:8UMaKfWhFuPfs7JqdDCKpIbro89gt6Uv@oregon-redis.render.com:6379')],  # Using Redis URL from environment variable
+            'hosts': [env('REDIS_URL')],
         },
     },
 }
@@ -96,11 +96,11 @@ DATABASES = {
     'default': dj_database_url.config(
         default='postgresql://swiftproject_db_user:5jCqr6TucKgzmIX1ESI9juYtvTHnyInM@dpg-cu2pnapopnds73clvib0-a.oregon-postgres.render.com/swiftproject_db',
         conn_max_age=600,  # Keep persistent database connections
-        ssl_require=True,   # Ensure SSL connection for security
+        ssl_require=True,  # Ensure SSL connection for security
     )
 }
+
 # Password validation
-# https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -116,24 +116,22 @@ USE_L10N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.0/howto/static-files/
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # Directory for static files during development
+    os.path.join(BASE_DIR, 'static'),  # Directory for static files during development
 ]
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directory for collected static files in production
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directory for collected static files in production
 
 # Whitenoise storage configuration
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Logging configuration (capture warnings and errors in production)
+# Logging configuration
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -152,29 +150,26 @@ LOGGING = {
     },
 }
 
-# Authentication backend (use default model backend)
+# Authentication backend
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# Email backend configuration (use Gmail SMTP with environment variables)
+# Email backend configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env('upworkstud198@gmail.com')  # Use environment variable
-EMAIL_HOST_PASSWORD = env('yktr gjti qvhj nvci')  # Use environment variable
+EMAIL_HOST_USER = env('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = 'Swift Talent Forge <info@swifttalentforge.com>'
 
-# CSRF and Session security (enable secure cookies in production)
+# CSRF and Session security
 CSRF_TRUSTED_ORIGINS = [
     'https://swifttalentforge.com',
     'https://www.swifttalentforge.com',
-    'https://swiftgen-core.onrender.com'  # Added Render domain
+    'https://swiftgen-core.onrender.com'
 ]
 
-# Secure session and CSRF cookies over HTTPS
 SESSION_COOKIE_SECURE = True  # Ensures session cookies are only sent over HTTPS
 CSRF_COOKIE_SECURE = True     # Ensures CSRF cookies are only sent over HTTPS
