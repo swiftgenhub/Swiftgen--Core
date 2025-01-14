@@ -96,7 +96,8 @@ WSGI_APPLICATION = 'Work.wsgi.application'
 import os
 from urllib.parse import urlparse
 
-DATABASE_URL = os.getenv('DATABASE_URL')
+# Use your provided DATABASE_URL directly (for testing or specific setup)
+DATABASE_URL = 'postgresql://swiftproject_db_user:5jCqr6TucKgzmIX1ESI9juYtvTHnyInM@dpg-cu2pnapopnds73clvib0-a.oregon-postgres.render.com/swiftproject_db'
 
 if DATABASE_URL:
     # Parse the database URL for PostgreSQL
@@ -119,6 +120,7 @@ else:
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
+
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
