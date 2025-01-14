@@ -1,7 +1,6 @@
 import os
 import dj_database_url
 import environ
-from pathlib import Path
 
 # Initialize environment variables using django-environ
 env = environ.Env(
@@ -16,20 +15,22 @@ env = environ.Env(
     EMAIL_HOST_USER=(str, 'your-email@gmail.com'),
     EMAIL_HOST_PASSWORD=(str, 'your-email-password'),
 )
-environ.Env.read_env()
+environ.Env.read_env()  # Reading .env file for local development
 
-# Define the base directory
-BASE_DIR = Path(__file__).resolve().parent.parent
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Security settings
+# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('DJANGO_SECRET_KEY')
-DEBUG = env('DEBUG', default=False)
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = env('False')
 
 ALLOWED_HOSTS = [
-    'swiftgen-core.onrender.com',
-    '127.0.0.1',
-    'swifttalentforge.com',
-    'www.swifttalentforge.com',
+    'swiftgen-core.onrender.com',  # Render hostname
+    '127.0.0.1',  # Localhost
+    'swifttalentforge.com',  # Squarespace custom domain
+    'www.swifttalentforge.com',  # Custom domain with www
 ]
 
 # Application definition
@@ -51,14 +52,14 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [env('REDIS_URL')],
+            'hosts': [env('rediss://red-cu2r11lumphs73avnm60:8UMaKfWhFuPfs7JqdDCKpIbro89gt6Uv@oregon-redis.render.com:6379')],  # Using Redis URL from environment variable
         },
     },
 }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Static files handling in production
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -72,7 +73,7 @@ ROOT_URLCONF = 'Work.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'Portal/templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'Portal/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -90,16 +91,16 @@ TEMPLATES = [
 ASGI_APPLICATION = "Work.asgi.application"
 WSGI_APPLICATION = 'Work.wsgi.application'
 
-# Database configuration with persistent connections and SSL requirement
+# Replace SQLite database configuration with PostgreSQL
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://swiftproject_db_user:password@hostname/dbname',
-        conn_max_age=600,
-        ssl_require=True,
+        default='postgresql://swiftproject_db_user:5jCqr6TucKgzmIX1ESI9juYtvTHnyInM@dpg-cu2pnapopnds73clvib0-a.oregon-postgres.render.com/swiftproject_db',
+        conn_max_age=600,  # Keep persistent database connections
+        ssl_require=True,   # Ensure SSL connection for security
     )
 }
-
 # Password validation
+# https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -107,26 +108,32 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# Localization
+# Localization settings
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'Asia/Kolkata'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-# Static and media files handling
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/4.0/howto/static-files/
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [BASE_DIR / 'static']
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # Directory for static files during development
+]
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directory for collected static files in production
+
+# Whitenoise storage configuration
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media/'
 
 # Default primary key field type
+# https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Logging configuration for production
+# Logging configuration (capture warnings and errors in production)
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -136,7 +143,7 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.FileHandler',
-            'filename': BASE_DIR / 'logs/django.log',
+            'filename': os.path.join(BASE_DIR, 'logs/django.log'),
         },
     },
     'root': {
@@ -145,21 +152,29 @@ LOGGING = {
     },
 }
 
-# Email configuration using environment variables
+# Authentication backend (use default model backend)
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Email backend configuration (use Gmail SMTP with environment variables)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = env('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD')
+EMAIL_HOST_USER = env('upworkstud198@gmail.com')  # Use environment variable
+EMAIL_HOST_PASSWORD = env('yktr gjti qvhj nvci')  # Use environment variable
 DEFAULT_FROM_EMAIL = 'Swift Talent Forge <info@swifttalentforge.com>'
 
-# CSRF and session security
+# CSRF and Session security (enable secure cookies in production)
 CSRF_TRUSTED_ORIGINS = [
     'https://swifttalentforge.com',
     'https://www.swifttalentforge.com',
-    'https://swiftgen-core.onrender.com',
+    'https://swiftgen-core.onrender.com'  # Added Render domain
 ]
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
 
+# Secure session and CSRF cookies over HTTPS
+SESSION_COOKIE_SECURE = True  # Ensures session cookies are only sent over HTTPS
+CSRF_COOKIE_SECURE = True     # Ensures CSRF cookies are only sent over HTTPS
