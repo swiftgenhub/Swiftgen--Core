@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlparse
 import environ
 import dj_database_url
 
@@ -24,7 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('False')
+DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = [
     'swiftgen-core.onrender.com',  # Render hostname
@@ -52,7 +53,7 @@ CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
-            'hosts': [env('rediss://red-cu2r11lumphs73avnm60:8UMaKfWhFuPfs7JqdDCKpIbro89gt6Uv@oregon-redis.render.com:6379')],
+            'hosts': [env('REDIS_URL')],
         },
     },
 }
@@ -91,14 +92,30 @@ TEMPLATES = [
 ASGI_APPLICATION = "Work.asgi.application"
 WSGI_APPLICATION = 'Work.wsgi.application'
 
-# Replace SQLite database configuration with PostgreSQL
-DATABASES = {
-    'default': dj_database_url.config(
-        default='postgresql://swiftproject_db_user:5jCqr6TucKgzmIX1ESI9juYtvTHnyInM@dpg-cu2pnapopnds73clvib0-a.oregon-postgres.render.com/swiftproject_db',
-        conn_max_age=600,  # Keep persistent database connections
-        ssl_require=True,  # Ensure SSL connection for security
-    )
-}
+# Parse the DATABASE_URL environment variable
+DATABASE_URL = os.environ.get('DATABASE_URL')
+
+if DATABASE_URL:
+    result = urlparse(DATABASE_URL)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': result.path[1:],  # remove leading slash
+            'USER': result.username,
+            'PASSWORD': result.password,
+            'HOST': result.hostname,
+            'PORT': result.port,
+        }
+    }
+else:
+    # Fallback to using dj_database_url for DATABASE configuration
+    DATABASES = {
+        'default': dj_database_url.config(
+            default='postgresql://swiftproject_db_user:5jCqr6TucKgzmIX1ESI9juYtvTHnyInM@dpg-cu2pnapopnds73clvib0-a.oregon-postgres.render.com/swiftproject_db',
+            conn_max_age=600,  # Keep persistent database connections
+            ssl_require=True,  # Ensure SSL connection for security
+        )
+    }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
