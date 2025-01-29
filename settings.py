@@ -6,17 +6,15 @@ import dj_database_url
 # Initialize environment variables using django-environ
 env = environ.Env(
     DEBUG=(bool, False),
-    DJANGO_SECRET_KEY=(str, 'fallback-secret-key'),
-    DB_NAME=(str, 'your-db-name'),
-    DB_USER=(str, 'your-db-user'),
-    DB_PASSWORD=(str, 'your-db-password'),
-    DB_HOST=(str, 'localhost'),
-    DB_PORT=(str, '5432'),
+    DJANGO_SECRET_KEY=(str, ''),  # No fallback key for production
+    DATABASE_URL=(str, 'postgresql://localhost:5432/your-db-name'),  # Default local DB
     REDIS_URL=(str, 'redis://localhost:6379/0'),
-    EMAIL_HOST_USER=(str, 'your-email@gmail.com'),
-    EMAIL_HOST_PASSWORD=(str, 'your-email-password'),
+    EMAIL_HOST_USER=(str, ''),
+    EMAIL_HOST_PASSWORD=(str, ''),
+    ALLOWED_HOSTS=(list, ['127.0.0.1']),  # Default localhost
+    CORS_ALLOWED_ORIGINS=(list, []),  # For frontend integration
 )
-environ.Env.read_env()  # Reading .env file for local development
+environ.Env.read_env()  # Read .env file for local development
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,14 +23,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = env('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env('False')
+DEBUG = env('DEBUG')
 
-ALLOWED_HOSTS = [
-    'swiftgen-core.onrender.com',  # Render hostname
-    '127.0.0.1',  # Localhost
-    'swifttalentforge.com',  # Squarespace custom domain
-    'www.swifttalentforge.com',  # Custom domain with www
-]
+# Allowed hosts for production
+ALLOWED_HOSTS = env('ALLOWED_HOSTS')
+
+# CORS settings for frontend integration
+CORS_ALLOWED_ORIGINS = env('CORS_ALLOWED_ORIGINS')
 
 # Application definition
 INSTALLED_APPS = [
@@ -46,21 +43,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
+    'corsheaders',  # Add CORS headers for frontend integration
 ]
-
-# Configure Channels to use Redis as the channel layer
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            'hosts': [env('REDIS_URL')],
-        },
-    },
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # Static files handling in production
+    'corsheaders.middleware.CorsMiddleware',  # CORS middleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -92,30 +81,14 @@ TEMPLATES = [
 ASGI_APPLICATION = "Work.asgi.application"
 WSGI_APPLICATION = 'Work.wsgi.application'
 
-# Parse the DATABASE_URL environment variable
-DATABASE_URL = os.environ.get('DATABASE_URL')
-
-if DATABASE_URL:
-    result = urlparse(postgresql://swiftproject_db_user:5jCqr6TucKgzmIX1ESI9juYtvTHnyInM@dpg-cu2pnapopnds73clvib0-a.oregon-postgres.render.com/swiftproject_db)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'postgresql://swiftproject_db_user:5jCqr6TucKgzmIX1ESI9juYtvTHnyInM@dpg-cu2pnapopnds73clvib0-a.oregon-postgres.render.com/swiftproject_db',
-            'NAME': result.path[1:],  # remove leading slash
-            'USER': result.username,
-            'PASSWORD': result.password,
-            'HOST': result.hostname,
-            'PORT': result.port,
-        }
-    }
-else:
-    # Fallback to using dj_database_url for DATABASE configuration
-    DATABASES = {
-        'default': dj_database_url.config(
-            default='postgresql://swiftproject_db_user:5jCqr6TucKgzmIX1ESI9juYtvTHnyInM@dpg-cu2pnapopnds73clvib0-a.oregon-postgres.render.com/swiftproject_db',
-            conn_max_age=600,  # Keep persistent database connections
-            ssl_require=True,  # Ensure SSL connection for security
-        )
-    }
+# Database configuration
+DATABASES = {
+    'default': dj_database_url.config(
+        default=env('DATABASE_URL'),
+        conn_max_age=600,  # Persistent connections
+        ssl_require=True,  # Enforce SSL for production
+    )
+}
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
@@ -156,13 +129,9 @@ LOGGING = {
         'console': {
             'class': 'logging.StreamHandler',
         },
-        'file': {
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/django.log'),
-        },
     },
     'root': {
-        'handlers': ['console', 'file'],
+        'handlers': ['console'],
         'level': os.environ.get('DJANGO_LOG_LEVEL', 'WARNING'),
     },
 }
@@ -185,8 +154,18 @@ DEFAULT_FROM_EMAIL = 'Swift Talent Forge <info@swifttalentforge.com>'
 CSRF_TRUSTED_ORIGINS = [
     'https://swifttalentforge.com',
     'https://www.swifttalentforge.com',
-    'https://swiftgen-core.onrender.com'
+    'https://swiftgen-core.onrender.com',
 ]
 
 SESSION_COOKIE_SECURE = True  # Ensures session cookies are only sent over HTTPS
 CSRF_COOKIE_SECURE = True     # Ensures CSRF cookies are only sent over HTTPS
+
+# Configure Channels to use Redis as the channel layer
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [env('REDIS_URL')],
+        },
+    },
+}
